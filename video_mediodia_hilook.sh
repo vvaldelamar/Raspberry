@@ -5,7 +5,6 @@ cd /media/pi/DATOS/video_web
 #ENTRADA HILOOK
 #/media/pi/DATOS/DATOS-b/HILOOK/
 # Imprimimos la fecha en cada foto
-find /media/pi/DATOS/DATOS-b/HILOOK/`date "+%Y%m%2d"`/ -name "*.jpg" -type f -printf "%T@\t%Tc %6k KiB %p\n" | sort -n |awk '{print "file "$11}' > image_hilook.txt
 path="/media/pi/DATOS/DATOS-b/HILOOK/`date "+%Y%m%2d"`/"
 find "$path" -name "*.jpg" -type f | while read -r filename; do
     datetime=$(echo "$filename" | grep -oP '\d{4}\d{2}\d{2}\d{6}')
@@ -17,6 +16,8 @@ find "$path" -name "*.jpg" -type f | while read -r filename; do
     formatted_datetime=$(date -d "$original_datetime" "+%Y%m%d%H%M.%S")
     touch -m -t "$formatted_datetime" "$filename" 
 done
+
+find /media/pi/DATOS/DATOS-b/HILOOK/`date "+%Y%m%2d"`/ -name "*.jpg" -type f -printf "%T@\t%Tc %6k KiB %p\n" | sort -n |awk '{print "file "$11}' > image_hilook.txt
 ffmpeg -y -r 1 -f concat -safe 0 -i image_hilook.txt -vcodec h264 -vf "fps=20,scale=-1:720,format=yuv420p,setpts=0.25*PTS" output_hilook_`date "+%Y%m%2d"`.mp4
 ffmpeg -y -i output_hilook_`date "+%Y%m%2d"`.mp4 -hls_time 2 -hls_key_info_file /media/pi/DATOS/enc.keyinfo -hls_playlist_type vod -hls_segment_filename "output_hilook_`date "+%Y%m%2d"`_%d.ts" output_hilook_`date "+%Y%m%2d"`.m3u8
 /media/pi/DATOS/spritevideo -i output_hilook_`date "+%Y%m%2d"`.mp4 -o /media/pi/DATOS/video_web -p output_hilook_`date "+%Y%m%2d"`.jpg
