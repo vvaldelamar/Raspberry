@@ -3,7 +3,6 @@
 # Imprimimos la fecha en cada foto
 #identify -format "%w x %h %Q\n" DATOS-b/01/192.168.0.155_01_20230805141057093_MOTION_DETECTION.jpg
 
-find /media/pi/DATOS/DATOS-b/HILOOK/`date "+%Y%m%2d" --date "-1 day"`/ -name "*.jpg" -type f -printf "%T@\t%Tc %6k KiB %p\n" | sort -n |awk '{print "file "$11}' > image_hilook.txt
 path="/media/pi/DATOS/DATOS-b/HILOOK/`date "+%Y%m%2d" --date "-1 day"`/"
 find "$path" -name "*.jpg" -type f | while read -r filename; do
     datetime=$(echo "$filename" | grep -oP '\d{4}\d{2}\d{2}\d{6}')
@@ -16,6 +15,7 @@ find "$path" -name "*.jpg" -type f | while read -r filename; do
     touch -m -t "$formatted_datetime" "$filename"	
 done
 cd /media/pi/DATOS/video_web
+find /media/pi/DATOS/DATOS-b/HILOOK/`date "+%Y%m%2d" --date "-1 day"`/ -name "*.jpg" -type f -printf "%T@\t%Tc %6k KiB %p\n" | sort -n |awk '{print "file "$11}' > image_hilook.txt
 #ENTRADA HILOOK
 #/media/pi/DATOS/DATOS-b/HILOOK/
 ffmpeg -y -r 1 -f concat -safe 0 -i image_hilook.txt -vcodec h264 -vf "fps=20,scale=-1:720,format=yuv420p,setpts=0.25*PTS" output_hilook_`date "+%Y%m%2d" --date "-1 day"`.mp4
