@@ -8,10 +8,10 @@ find "$path" -name "*.jpg" -type f | while read -r filename; do
     datetime=$(echo "$filename" | grep -oP '\d{4}\d{2}\d{2}\d{6}')
     date="${datetime:6:2}-${datetime:4:2}-${datetime:0:4}"
     time="${datetime:8:2}:${datetime:10:2}:${datetime:12:2}"
-    mogrify -gravity NorthEast -pointsize 30 -fill white -annotate +100+30 "$date $time" "$filename"
     #Regresa la fecha y hora para el orden del grabado del video.
     original_datetime=$(stat -c %y "$filename")
     formatted_datetime=$(date -d "$original_datetime" "+%Y%m%d%H%M.%S")
+    mogrify -gravity NorthEast -pointsize 30 -fill white -annotate +100+30 "$date $time" "$filename"
     touch -m -t "$formatted_datetime" "$filename"	
 done
 cd /media/pi/DATOS/video_web
